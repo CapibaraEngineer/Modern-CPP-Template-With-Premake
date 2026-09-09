@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 # Structuring script for this Premake workspace.
-# 1. Renames the "ProjectName" template project to a real name.
+# 1. Renames the "ProjectName" template project to a real name
+#    (also renames the "ProjectNameTests" project and all path references).
 # 2. Updates workspace/startproject names in premake/premake5.lua.
-# 3. Optionally creates additional projects just like the template.
+# 3. Optionally creates additional projects just like the template
+#    (each uses common_settings(rootDir) from premake/common.lua).
 #
+# Layout: <Name>/{include,modules,source}/, shared tests in top-level tests/.
 # Usage: ./configure.sh   (all interactive, no arguments)
 
 set -euo pipefail
@@ -63,45 +66,26 @@ project_exists_in_premake() {
 
 append_project_block() {
     # $1 = project name, $2 = kind (ConsoleApp|StaticLib|SharedLib)
+    # Shared flags/target dirs come from common_settings() in premake/common.lua.
     local name="$1" kind="$2"
     cat >> "$PREMAKE_FILE" <<EOF
 
 project("$name")
-    location (rootDir .. "$name/")
-    kind ("$kind")
-    language ("C++")
-    cppdialect "C++23"
+    location(rootDir .. "build/$name")
+    kind("$kind")
+    common_settings(rootDir)
 
-    targetdir (rootDir .. "bin/$name/%{cfg.system}_%{cfg.architecture}/%{cfg.buildcfg}")
-    objdir (rootDir .. "bin/$name/%{cfg.system}_%{cfg.architecture}/%{cfg.buildcfg}/obj")
-
-    files {
+    files({
         rootDir .. "$name/**.cpp",
         rootDir .. "$name/**.hpp",
-        rootDir .. "$name/**.cppm"
-    }
+        rootDir .. "$name/**.cppm",
+    })
 
-    includedirs {
+    includedirs({
         rootDir .. "$name/include",
         rootDir .. "$name/modules",
-        rootDir .. "$name/source"
-    }
-
-    filter "configurations:Debug"
-        runtime "Debug"
-        defines {"DEBUG"}
-        linktimeoptimization "off"
-        optimize "off"
-        symbols "full"
-
-    filter "configurations:Release"
-        runtime "Release"
-        defines {"NDEBUG"}
-        linktimeoptimization "on"
-        optimize "on"
-        symbols "off"
-
-    filter {}
+        rootDir .. "$name/source",
+    })
 EOF
 }
 
@@ -186,7 +170,7 @@ while true; do
     done
 
     mkdir -p -- "$SCRIPT_DIR/$NEW_NAME/include" "$SCRIPT_DIR/$NEW_NAME/modules" \
-                "$SCRIPT_DIR/$NEW_NAME/source" "$SCRIPT_DIR/$NEW_NAME/tests"
+                "$SCRIPT_DIR/$NEW_NAME/source"
     append_project_block "$NEW_NAME" "$KIND"
     echo "Created $NEW_NAME/ ($KIND) and appended project(\"$NEW_NAME\") to premake5.lua."
 done
