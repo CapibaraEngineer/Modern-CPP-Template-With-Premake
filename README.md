@@ -20,6 +20,7 @@ project, shared build settings, and small helper scripts. Public domain
 ├── bin/                    # compiled binaries (ignored by git)
 ├── build/                  # generated makefiles + objects (ignored by git)
 ├── configure.sh            # rename workspace/projects, add new projects
+├── cleanup-template.sh   # one-shot template strip (self-deletes)
 ├── build.sh                # premake5 gmake + make wrapper
 └── clean.sh                # remove build/ and bin/ contents
 ```
@@ -40,6 +41,7 @@ lives in top-level `tests/` so the app keeps a single `main()`.
 ```sh
 ./configure.sh   # 1. rename ProjectName, 2. set workspace + startproject,
                  # 3. optionally add more projects (ConsoleApp/StaticLib/SharedLib)
+./cleanup-template.sh # strip template READMEs/examples (once, then it self-deletes)
 ./build.sh       # Debug build (or ./build.sh Release, ./build.sh --cc=clang)
 ./clean.sh       # wipe build/ and bin/ contents
 ```

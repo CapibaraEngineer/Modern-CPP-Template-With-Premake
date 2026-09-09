@@ -183,3 +183,4 @@ if ! project_exists_in_premake "$START_PROJECT"; then
 fi
 
 echo "Done. Premake file: premake/premake5.lua"
+echo "Next: ./cleanup-template.sh  (strip template READMEs/examples once you are happy with the layout)"
