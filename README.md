@@ -21,8 +21,10 @@ The template is licensed under the Unlicense for easy use. See `LICENSE`
 ├── build/                   # generated makefiles + objects (ignored by git)
 ├── configure.sh             # rename workspace/projects, add new projects
 ├── cleanup_template.sh      # one-shot template strip (self-deletes)
-├── build.sh                 # premake5 gmake + make wrapper
-├── test.sh                  # build + run all *Tests binaries
+├── build.sh                # premake5 + ninja wrapper (clang default)
+├── build_run.sh            # build, then run the startProject binary
+├── run.sh                  # run the startProject binary
+├── test.sh                 # build + run all *Tests binaries
 └── clean.sh                 # remove build/ and bin/ contents
 ```
 
@@ -50,10 +52,17 @@ Cleans the template stuff, README, examples, and then self deletes along with co
 Run this after configure.sh
 
 ## Utilitary Scripts
-The templates comes with 3 useful scripts 
+The templates comes with 5 useful scripts 
 ### `./build.sh`
 build the project, default to clang + ninja in Debug build.
 run build.sh Release for release build, -cc=gcc for gcc, --gmake for gmake
+### `./run.sh`
+run the startProject binary (`./build.sh` first).
+program args go after `--`: `./run.sh Release -- --some-app-flag`
+### `./build_run.sh`
+build, then run the startProject binary.
+config and build options go before `--`, program args after it:
+`./build_run.sh Release --cc=gcc -- --some-app-flag`
 ### `./test.sh`
 Build and runa tests in debug build, run ./test.sh Sanitize for Sanitize build
 ### `./clean.sh`
