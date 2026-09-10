@@ -6,9 +6,9 @@ Build scripts for [Premake 5](https://premake.github.io).
   and `ProjectNameTests` (separate tests binary). Run `configure.sh` first to
   rename them.
 - `common.lua` — shared settings used by every project: C++23, `warnings
-  "Extra"`, Debug/Release flags, `targetdir` under `bin/`, `objdir` under
-  `build/`, `-fmodules` for GCC/Clang (needed for `.cppm`), Linux system
-  libs.
+  "Extra"`, Debug/Release/Sanitize flags, `targetdir` under `bin/`, `objdir`
+  under `build/`, `-fmodules` for GCC/Clang (needed for `.cppm`), Linux
+  system libs.
 
 ## Install premake5 (5.0.0-beta8 or newer)
 
@@ -21,26 +21,27 @@ Build scripts for [Premake 5](https://premake.github.io).
 ## Generate + build (from repo root)
 
 ```sh
-./build.sh            # Debug, default compiler
+./build.sh            # Debug, Clang + Ninja (defaults)
 ./build.sh Release    # Release
-./build.sh --cc=clang # Clang instead of GCC
+./build.sh --cc=gcc   # GCC instead of Clang
+./build.sh --gmake    # GNU makefiles instead of Ninja
 ./clean.sh            # remove build/ and bin/ contents
 ```
 
-What `build.sh` does:
+What `build.sh` does by default:
 
 ```sh
-premake5 --file=premake/premake5.lua gmake
-make -C build config=debug_x86_64   # or release_x86_64
+premake5 --cc=clang --file=premake/premake5.lua ninja
+ninja -C build ProjectName_Debug ProjectNameTests_Debug  # per-config targets
 ```
 
-Binaries land in `bin/<ProjectName>/linux_x86_64/<Debug|Release>/`
-(objects in `build/obj/...`, makefiles in `build/`).
+Binaries land in `bin/<ProjectName>/linux_x86_64/<Debug|Release|Sanitize>/`
+(objects in `build/obj/...`, ninja/make files in `build/`).
 
 ## IDE / clangd notes
 
 - VSCode + clangd: generate `compile_commands.json` with
-  `bear -- ./build.sh` or `compiledb -n make -C build`, then point clangd
-  at it. Premake's `gmake` action does not emit one itself.
+  `bear -- ./build.sh`, then point clangd at it. Premake's `ninja`/`gmake`
+  actions do not emit one themselves.
 - Visual Studio: `premake5 --file=premake/premake5.lua vs2022`
   (output goes to `build/` per `workspace.location`).

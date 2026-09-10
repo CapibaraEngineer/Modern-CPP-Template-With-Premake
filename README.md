@@ -16,12 +16,13 @@ project, shared build settings, and small helper scripts. Public domain
 │   └── test_example.cpp
 ├── premake/
 │   ├── premake5.lua        # workspace + ProjectName + ProjectNameTests
-│   └── common.lua          # shared settings (C++23, warnings, Debug/Release)
+│   └── common.lua          # shared settings (C++23, warnings, Debug/Release/Sanitize)
 ├── bin/                    # compiled binaries (ignored by git)
 ├── build/                  # generated makefiles + objects (ignored by git)
 ├── configure.sh            # rename workspace/projects, add new projects
-├── cleanup-template.sh   # one-shot template strip (self-deletes)
+├── cleanup_template.sh   # one-shot template strip (self-deletes)
 ├── build.sh                # premake5 gmake + make wrapper
+├── test.sh                 # build + run all *Tests binaries
 └── clean.sh                # remove build/ and bin/ contents
 ```
 
@@ -32,8 +33,9 @@ lives in top-level `tests/` so the app keeps a single `main()`.
 ## Prerequisites
 
 - `premake5` 5.0.0-beta8+ (`premake5 --version`), see `premake/README.md`.
-- GCC 14+ or Clang 17+ with C++23 support, plus `make`.
-- Optional: `bear`/`compiledb` for `compile_commands.json` (clangd),
+- Clang 17+ (default) or GCC 14+ with C++23 support, plus `ninja`
+  (`--gmake` falls back to GNU make).
+- Optional: `bear` for `compile_commands.json` (clangd),
   `clang-format`, `clang-tidy`.
 
 ## Quickstart
@@ -41,8 +43,9 @@ lives in top-level `tests/` so the app keeps a single `main()`.
 ```sh
 ./configure.sh   # 1. rename ProjectName, 2. set workspace + startproject,
                  # 3. optionally add more projects (ConsoleApp/StaticLib/SharedLib)
-./cleanup-template.sh # strip template READMEs/examples (once, then it self-deletes)
-./build.sh       # Debug build (or ./build.sh Release, ./build.sh --cc=clang)
+./cleanup_template.sh # strip template READMEs/examples (once, then it self-deletes)
+./build.sh       # Debug, Clang + Ninja (or ./build.sh Release|Sanitize, --cc=gcc, --gmake)
+./test.sh        # build (Debug) and run all *Tests binaries (or ./test.sh Sanitize)
 ./clean.sh       # wipe build/ and bin/ contents
 ```
 
@@ -60,7 +63,9 @@ Run the results (paths contain `<system>_<arch>/<Config>`):
   `build/obj/<Proj>/...` (see `common_settings()` in `premake/common.lua`).
 - Every project gets: `C++23`, `warnings "Extra"`, `staticruntime "on"`,
   Debug (`DEBUG`, no optimize, full symbols) / Release (`NDEBUG`, LTO +
-  optimize, no symbols), `-fmodules` on GCC/Clang (required for `.cppm`),
+  optimize, no symbols) / Sanitize (like Debug + ASan/UBSan;
+  needs the sanitizer runtimes, e.g. `sudo dnf install libasan libubsan`),
+  `-fmodules` on GCC/Clang (required for `.cppm`),
   Linux links `pthread dl m`.
 - Tests: `ProjectNameTests` is a second `ConsoleApp` compiling
   `tests/**` plus the shared non-`main` sources
@@ -78,12 +83,12 @@ Run the results (paths contain `<system>_<arch>/<Config>`):
 
 Re-run `./configure.sh` and answer `y` at `Create another project?`.
 It creates `Name/{include,modules,source}/` and appends a block using
-`common_settings(rootDir)` — no duplicated Debug/Release filters.
+`common_settings(rootDir)` — no duplicated per-config filters.
 
 ## Hygiene
 
 - `.gitignore` covers `bin/`, `build/`, VS/make artifacts, `gcm.cache/`.
-- `.editorconfig`, `.clang-format` (LLVM, 4-space, 100 col),
+- `.editorconfig`, `.clang-format` (LLVM, tabs width 4, 100 col),
   `.clang-tidy` (diagnostic/analyzer/modernize/readability/performance/bugprone).
 - `clang-format -i` / `clang-tidy` your sources before committing.
 

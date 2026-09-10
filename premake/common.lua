@@ -10,39 +10,49 @@
 --     common_settings(rootDir)
 
 function common_settings(rootDir)
-    language("C++")
-    cppdialect("C++23")
-    warnings("Extra")
-    staticruntime("on")
-    exceptionhandling("Default")
-    rtti("On")
+	language("C++")
+	cppdialect("C++23")
+	warnings("Extra")
+	staticruntime("on")
+	exceptionhandling("Default")
+	rtti("On")
 
-    targetdir(rootDir .. "bin/%{prj.name}/%{cfg.system}_%{cfg.architecture}/%{cfg.buildcfg}")
-    objdir(rootDir .. "build/obj/%{prj.name}/%{cfg.system}_%{cfg.architecture}/%{cfg.buildcfg}")
+	targetdir(rootDir .. "bin/%{prj.name}/%{cfg.system}_%{cfg.architecture}/%{cfg.buildcfg}")
+	objdir(rootDir .. "build/obj/%{prj.name}/%{cfg.system}_%{cfg.architecture}/%{cfg.buildcfg}")
 
-    -- Named modules (.cppm) need explicit modules support on GCC/Clang.
-    -- Without this, any .cppm file fails with
-    -- "'module' does not name a type ... only available with '-fmodules'".
-    filter("toolset:gcc or toolset:clang")
-        buildoptions({ "-fmodules" })
+	-- Named modules (.cppm) need explicit modules support on GCC/Clang.
+	-- Without this, any .cppm file fails with
+	-- "'module' does not name a type ... only available with '-fmodules'".
+	filter("toolset:gcc or toolset:clang")
+		buildoptions({ "-fmodules" })
 
-    filter("configurations:Debug")
-        runtime("Debug")
-        defines({ "DEBUG" })
-        linktimeoptimization("off")
-        optimize("off")
-        symbols("full")
+	-- Clang links via lld: bfd ld would need the LLVMgold plugin for LTO,
+	-- which standalone Clang installs typically do not ship.
+	filter("toolset:clang")
+		linkoptions({ "-fuse-ld=lld" })
 
-    filter("configurations:Release")
-        runtime("Release")
-        defines({ "NDEBUG" })
-        linktimeoptimization("on")
-        optimize("on")
-        symbols("off")
+	filter("configurations:Debug")
+		runtime("Debug")
+		defines({ "DEBUG" })
+		linktimeoptimization("off")
+		optimize("off")
+		symbols("full")
 
-    -- System libraries commonly needed on Linux (harmless if unused).
-    filter("system:linux")
-        links({ "pthread", "dl", "m" })
+	filter("configurations:Release")
+		runtime("Release")
+		defines({ "NDEBUG" })
+		linktimeoptimization("on")
+		optimize("on")
+		symbols("off")
 
-    filter({})
+	-- Sanitized debug build: AddressSanitizer + UndefinedBehaviorSanitizer.
+	filter("configurations:Sanitize")
+		runtime("Debug")
+		defines({ "DEBUG" })
+		sanitize({ "Address", "UndefinedBehavior" })
+		linktimeoptimization("off")
+		optimize("off")
+		symbols("full")
+
+	filter({})
 end

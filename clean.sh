@@ -9,9 +9,9 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 rm -rf -- "$SCRIPT_DIR/build"
 mkdir -p -- "$SCRIPT_DIR/build"
 if [ -d "$SCRIPT_DIR/bin" ]; then
-    find "$SCRIPT_DIR/bin" -mindepth 1 -maxdepth 1 ! -name 'README.md' -exec rm -rf -- {} +
+	find "$SCRIPT_DIR/bin" -mindepth 1 -maxdepth 1 ! -name 'README.md' -exec rm -rf -- {} +
 else
-    mkdir -p -- "$SCRIPT_DIR/bin"
+	mkdir -p -- "$SCRIPT_DIR/bin"
 fi
 
 # Keep tracked placeholder READMEs if they exist; recreate dir only.

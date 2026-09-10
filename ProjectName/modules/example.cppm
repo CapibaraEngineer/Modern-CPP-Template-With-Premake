@@ -10,5 +10,5 @@ module;
 export module example;
 
 export void print_example() {
-    std::cout << "example module\n";
+	std::cout << "example module\n";
 }
