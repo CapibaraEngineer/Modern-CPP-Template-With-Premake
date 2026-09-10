@@ -2,7 +2,7 @@
 
 A Mininal template for C++23 projects with Premake, a easy starting point.
 I built this mostly for personal use, but feel free to open an issue or pull request. I appreciate feedback.
-The template is licensed under the Unlicense for easy use. See `LICENSE`
+The template is licensed under the Unlicense for easy use. See [LICENSE](LICENSE)
 
 ## Layout
 
@@ -103,4 +103,4 @@ It creates `Name/{include,modules,source}/` and appends a block using `common_se
 
 ## License
 
-Unlicense — public domain, see `LICENSE`.
+Unlicense — public domain, see [LICENSE](LICENSE).
