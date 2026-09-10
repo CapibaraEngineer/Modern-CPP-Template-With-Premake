@@ -64,7 +64,7 @@ build, then run the startProject binary.
 config and build options go before `--`, program args after it:
 `./build_run.sh Release --cc=gcc -- --some-app-flag`
 ### `./test.sh`
-Build and runa tests in debug build, run ./test.sh Sanitize for Sanitize build
+Build and run tests in debug build, run ./test.sh Sanitize for Sanitize build
 ### `./clean.sh`
 Empty build/ and bin/
 
