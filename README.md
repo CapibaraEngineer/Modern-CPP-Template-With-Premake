@@ -21,10 +21,10 @@ The template is licensed under the Unlicense for easy use. See `LICENSE`
 ├── build/                   # generated makefiles + objects (ignored by git)
 ├── configure.sh             # rename workspace/projects, add new projects
 ├── cleanup_template.sh      # one-shot template strip (self-deletes)
-├── build.sh                # premake5 + ninja wrapper (clang default)
-├── build_run.sh            # build, then run the startProject binary
-├── run.sh                  # run the startProject binary
-├── test.sh                 # build + run all *Tests binaries
+├── build.sh                 # premake5 + ninja wrapper (clang default)
+├── build_run.sh             # build, then run the startProject binary
+├── run.sh                   # run the startProject binary
+├── test.sh                  # build + run all *Tests binaries
 └── clean.sh                 # remove build/ and bin/ contents
 ```
 
