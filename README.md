@@ -2,7 +2,7 @@
 
 A Mininal template for C++23 projects with Premake, a easy starting point.
 I built this mostly for personal use, but feel free to open an issue or pull request. I appreciate feedback.
-Unlicense
+The template is licensed under the Unlicense for easy use. See `LICENSE`
 
 ## Layout
 
@@ -26,7 +26,7 @@ Unlicense
 └── clean.sh                 # remove build/ and bin/ contents
 ```
 
-source code split per project: `include/` public headers, `modules/` `.cppm` named modules, `source/` implementation + `main.cpp`. 
+Source code split per project: `include/` public headers, `modules/` `.cppm` named modules, `source/` implementation + `main.cpp`. 
 Shared test suite lives in top-level `tests/` so the app keeps a single `main()`.
 
 ## Prerequisites
@@ -59,41 +59,31 @@ Build and runa tests in debug build, run ./test.sh Sanitize for Sanitize build
 ### `./clean.sh`
 Empty build/ and bin/
 
-Run the results (paths contain `<system>_<arch>/<Config>`):
-
-```sh
-./bin/ProjectName/linux_x86_64/Debug/ProjectName
-./bin/ProjectNameTests/linux_x86_64/Debug/ProjectNameTests
-```
 
 ## Build details
 
-- Workspace `location` is `build/` — generated makefiles stay out of the
-  source tree. Binaries go to `bin/<Proj>/...`, objects to
-  `build/obj/<Proj>/...` (see `common_settings()` in `premake/common.lua`).
+- Binaries are located in bin folder:
+  `bin/ProjectName/<system>_<arch>/<Config>/[binary]`
+- Workspace `location` is `build/`;
+- Generated makefiles stay out of the source tree. objects to `build/obj/<Proj>/...` (see `common_settings()` in `premake/common.lua`).
 - Every project gets: `C++23`, `warnings "Extra"`, `staticruntime "on"`,
-  Debug (`DEBUG`, no optimize, full symbols) / Release (`NDEBUG`, LTO +
-  optimize, no symbols) / Sanitize (like Debug + ASan/UBSan;
-  needs the sanitizer runtimes, e.g. `sudo dnf install libasan libubsan`),
+  In Debug builds: (`DEBUG`, no optimize, full symbols)
+  In Release builds (`NDEBUG`, Link Time Optimization + optimize, no symbols)
+  In Sanitize builds (like Debug but has address sanitazation and undefine behaviour sanitization;
+  needs the sanitizer runtimes, e.g. `libasan libubsan`),
   `-fmodules` on GCC/Clang (required for `.cppm`),
-  Linux links `pthread dl m`.
-- Tests: `ProjectNameTests` is a second `ConsoleApp` compiling
-  `tests/**` plus the shared non-`main` sources
-  (`source/example.cpp`, `include/example.hpp`, `modules/example.cppm`).
-  It is dependency-free — just `[PASS]/[FAIL]` lines and a non-zero exit
-  on failure. Swap in Catch2/doctest later if you like.
-- Modules note: `modules/example.cppm` deliberately avoids `import std;`
-  (needs a prebuilt `std.gcm`). Once your toolchain provides it, you can
-  switch the global-fragment `#include` to `import std;`. Note: Premake's
-  `gmake` backend currently ignores `.cppm` files (app/tests still build
-  from `.cpp`/`.hpp`); VS/Ninja handle them. Validate the module alone
-  with `g++ -std=c++23 -fmodules -fsyntax-only ProjectName/modules/example.cppm`.
+- Tests: `ProjectNameTests` is a second `ConsoleApp` compiling `tests/**` plus the shared non-`main` sources (`source/example.cpp`, `include/example.hpp`, `modules/example.cppm`).
+  It is dependency-free — just `[PASS]/[FAIL]` lines and a non-zero exit on failure.
+  Swap in Catch2/doctest later if you like.
+- Modules note: `modules/example.cppm` deliberately avoids `import std;` (needs a prebuilt `std.gcm/pcm`).
+  Once your toolchain provides it, you can  switch the global-fragment `#include` to `import std;`.
+  Note: Premake's `gmake` backend currently ignores `.cppm` files (app/tests still build from `.cpp`/`.hpp`); VS/Ninja handle them.
+  Validate the module alone with `g++ -std=c++23 -fmodules -fsyntax-only ProjectName/modules/example.cppm`.
 
 ## Adding projects
 
 Re-run `./configure.sh` and answer `y` at `Create another project?`.
-It creates `Name/{include,modules,source}/` and appends a block using
-`common_settings(rootDir)` — no duplicated per-config filters.
+It creates `Name/{include,modules,source}/` and appends a block using `common_settings(rootDir)` for no duplicated per-config filters.
 
 ## Hygiene
 
