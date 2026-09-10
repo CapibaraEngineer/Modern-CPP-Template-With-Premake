@@ -1,34 +1,33 @@
 # A Modern C++ Template for Projects with Premake
 
-Minimal C++23 + Premake 5 template: one app project, one separate tests
-project, shared build settings, and small helper scripts. Public domain
-(see `LICENSE`).
+A Mininal template for C++23 projects with Premake, a easy starting point.
+I built this mostly for personal use, but feel free to open an issue or pull request. I appreciate feedback.
+Unlicense
 
 ## Layout
 
 ```text
 .
-├── ProjectName/            # template app (rename via configure.sh)
-│   ├── include/example.hpp # example header (declares add())
-│   ├── modules/example.cppm# example named module (dependency-free)
-│   └── source/             # main.cpp + example.cpp
-├── tests/                  # separate ProjectNameTests binary (no framework)
-│   └── test_example.cpp
-├── premake/
-│   ├── premake5.lua        # workspace + ProjectName + ProjectNameTests
-│   └── common.lua          # shared settings (C++23, warnings, Debug/Release/Sanitize)
-├── bin/                    # compiled binaries (ignored by git)
-├── build/                  # generated makefiles + objects (ignored by git)
-├── configure.sh            # rename workspace/projects, add new projects
-├── cleanup_template.sh   # one-shot template strip (self-deletes)
-├── build.sh                # premake5 gmake + make wrapper
-├── test.sh                 # build + run all *Tests binaries
-└── clean.sh                # remove build/ and bin/ contents
+├── ProjectName/             # template app (rename via configure.sh)
+│   ├── include/example.hpp  # example header (declares add())
+│   ├── modules/example.cppm # example named module (dependency-free)
+│   └── source/              # main.cpp + example.cpp
+├── tests/                   # separate ProjectNameTests binary (no framework)
+│   └── test_example.cpp  
+├── premake/                   
+│   ├── premake5.lua         # workspace + ProjectName + ProjectNameTests
+│   └── common.lua           # shared settings (C++23, warnings, Debug/Release/Sanitize)
+├── bin/                     # compiled binaries (ignored by git)
+├── build/                   # generated makefiles + objects (ignored by git)
+├── configure.sh             # rename workspace/projects, add new projects
+├── cleanup_template.sh      # one-shot template strip (self-deletes)
+├── build.sh                 # premake5 gmake + make wrapper
+├── test.sh                  # build + run all *Tests binaries
+└── clean.sh                 # remove build/ and bin/ contents
 ```
 
-Per-project source split: `include/` public headers, `modules/` `.cppm`
-named modules, `source/` implementation + `main.cpp`. Shared test suite
-lives in top-level `tests/` so the app keeps a single `main()`.
+source code split per project: `include/` public headers, `modules/` `.cppm` named modules, `source/` implementation + `main.cpp`. 
+Shared test suite lives in top-level `tests/` so the app keeps a single `main()`.
 
 ## Prerequisites
 
@@ -39,15 +38,26 @@ lives in top-level `tests/` so the app keeps a single `main()`.
   `clang-format`, `clang-tidy`.
 
 ## Quickstart
+Once you copy the template yo ucan run two shell script for setting it up.
 
-```sh
-./configure.sh   # 1. rename ProjectName, 2. set workspace + startproject,
-                 # 3. optionally add more projects (ConsoleApp/StaticLib/SharedLib)
-./cleanup_template.sh # strip template READMEs/examples (once, then it self-deletes)
-./build.sh       # Debug, Clang + Ninja (or ./build.sh Release|Sanitize, --cc=gcc, --gmake)
-./test.sh        # build (Debug) and run all *Tests binaries (or ./test.sh Sanitize)
-./clean.sh       # wipe build/ and bin/ contents
-```
+### `./configure.sh`
+- Rename ProjectName;
+- Set workspace and startproject
+- Optionally add more projects (ConsoleApp/StaticLib/SharedLib)
+
+### `./cleanup_template.sh`
+Cleans the template stuff, README, examples, and then self deletes along with configure.sh
+Run this after configure.sh
+
+## Utilitary Scripts
+The templates comes with 3 useful scripts 
+### `./build.sh`
+build the project, default to clang + ninja in Debug build.
+run build.sh Release for release build, -cc=gcc for gcc, --gmake for gmake
+### `./test.sh`
+Build and runa tests in debug build, run ./test.sh Sanitize for Sanitize build
+### `./clean.sh`
+Empty build/ and bin/
 
 Run the results (paths contain `<system>_<arch>/<Config>`):
 
